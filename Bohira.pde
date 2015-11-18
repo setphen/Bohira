@@ -3,7 +3,6 @@ import controlP5.*;
 
 private ControlP5 cp5;
 
-
 PImage sourceImg, compImg, toSave;
 
 PImage[] tiles;
@@ -13,12 +12,11 @@ int tileSize = 53;
 
 void setup(){
   // ;)
-  size(600,900,P2D);
+  size(900,900,P2D);
   
   //controls setup
   cp5 = new ControlP5(this);
   cp5.setAutoDraw(false);
-  
   
   if (sourceImg == null) selectInput("Choose a source image","sourceFile");
   if (compImg == null) selectInput("Choose a composition image","compFile");
@@ -26,7 +24,7 @@ void setup(){
   
   rectMode(CENTER);
   noStroke();
-  noiseDetail(3,10);
+  noiseDetail(3,1.0);
   noLoop();
 }
 
@@ -39,11 +37,13 @@ void draw(){
   tiles = createTiles(tileCount);
   
   String[] imgArraySorted = sortColors(tileCount,tiles);
-  background(2);
   
-  //Get/Set sizes
-  float maxWidth = 1200;
-  float maxHeight = 1200;
+  background(0);
+  
+  //set sizes (hi-res)
+  float maxWidth = 1500;
+  float maxHeight = 1500;
+  
   float sizex = maxWidth;
   float sizey = maxHeight;
   if (((maxWidth / maxHeight) < ((float)compImg.width / (float)compImg.height))){
@@ -73,13 +73,15 @@ void draw(){
   blip.endDraw();
   PImage bb = blip.get();
  
-  
-  image(bb,0,0,sizex/2,sizey/2);
+  float displayScaleFactor = min(width/sizex,height/sizey) - 0.05;
+  float xx = sizex * displayScaleFactor;
+  float yy = sizey * displayScaleFactor;
+  image(bb,width/2 - xx/2,height/2 - yy/2, xx, yy);
   cp5.draw();
   toSave = bb.get();
 }
 
-void sourceFile(File selected){     
+void sourceFile(File selected){
   if (selected == null) exit();
   sourceImg = loadImage(selected.getAbsolutePath());   
 }
@@ -132,9 +134,9 @@ void mousePressed() {
 }
 
 void keyPressed() {
- if(key == ' '){
-   toSave.save(str(millis()) + ".jpg");
- }
+  if(key == ' '){
+    toSave.save(str(millis()) + ".jpg");
+  }
 }
 
 //Image selection class (methods for select buttons)
